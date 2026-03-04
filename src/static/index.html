@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONYX | ML-Powered Investment Intelligence</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Header -->
+        <header class="glass-header">
+            <div class="logo">
+                <span class="onyx-mark">ONYX</span>
+                <span class="onyx-subtitle">Intelligence</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="active">Analyze</a>
+                <a href="#">History</a>
+                <a href="#" class="login-btn">Sign In</a>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Search Section -->
+            <section class="hero-section" id="search-section">
+                <h1 class="hero-title">Forensic Investment Intelligence</h1>
+                <p class="hero-subtitle">Generate a comprehensive, ML-driven report on any US publicly listed company
+                    instantly.</p>
+
+                <div class="search-box">
+                    <input type="text" id="ticker-input" placeholder="Enter Ticker Symbol (e.g. AAPL, TSLA)"
+                        autocomplete="off">
+                    <button id="generate-btn" class="primary-btn">Generate Report</button>
+                    <!-- Loading Spinner for Auth/Search UI -->
+                </div>
+                <!-- Track analysis state -->
+                <div id="progress-container" class="hidden glass-card">
+                    <h3 class="progress-title">Analyzing <span id="progress-ticker">...</span></h3>
+                    <div class="progress-steps" id="progress-steps">
+                        <div class="step pending" id="step-data">
+                            <div class="step-icon">1</div>
+                            <div class="step-text">Ingesting SEC Filings & Stock Data...</div>
+                        </div>
+                        <div class="step pending" id="step-ml">
+                            <div class="step-icon">2</div>
+                            <div class="step-text">Running ML Scoring Engine...</div>
+                        </div>
+                        <div class="step pending" id="step-pdf">
+                            <div class="step-icon">3</div>
+                            <div class="step-text">Compiling PDF Report...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Preview Section -->
+            <section id="results-section" class="hidden">
+                <h2 class="section-title">Analysis Complete</h2>
+                <div class="visuals-grid">
+                    <div class="glass-card">
+                        <h3>Sub-Scores Breakdown</h3>
+                        <div class="subscores-grid">
+                            <div class="score-box">
+                                <h4>Financial Health</h4>
+                                <div class="score-val" id="res-score-fh">--</div>
+                            </div>
+                            <div class="score-box">
+                                <h4>Profitability</h4>
+                                <div class="score-val" id="res-score-pr">--</div>
+                            </div>
+                            <div class="score-box">
+                                <h4>Valuation</h4>
+                                <div class="score-val" id="res-score-va">--</div>
+                            </div>
+                            <div class="score-box">
+                                <h4>Risk Score</h4>
+                                <div class="score-val" id="res-score-ri">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Stock Price History (5Y)</h3>
+                        <div class="chart-container">
+                            <img id="res-chart" src="" alt="Stock Price Chart">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card verdict-card glass-card">
+                        <div class="verdict-header">
+                            <h3>Investment Verdict</h3>
+                            <span class="ticker-badge" id="res-ticker">AAPL</span>
+                        </div>
+                        <div class="verdict-score" id="res-score">
+                            --
+                        </div>
+                        <div class="verdict-label" id="res-label">
+                            --
+                        </div>
+                        <p class="verdict-sub">ONYX Score (Out of 100)</p>
+                    </div>
+
+                    <div class="result-card signals-card glass-card">
+                        <h3>Key Drivers</h3>
+                        <div class="signal-list positive-signals" id="res-positive">
+                            <h4>Top Strengths</h4>
+                            <ul>
+                            </ul>
+                        </div>
+                        <div class="signal-list negative-signals" id="res-negative">
+                            <h4>Key Risks</h4>
+                            <ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-footer">
+                    <button class="primary-btn download-btn" id="download-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Full Forensic PDF
+                    </button>
+                    <button class="secondary-btn" id="new-search-btn">New Analysis</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

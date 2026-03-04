@@ -1,0 +1,17 @@
+INFO:     Started server process [10426]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49822 - "POST /api/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44490 - "GET /api/download/AAPL HTTP/1.1" 200 OK
+Error fetching SEC data for RELIANCE.NS: Ticker RELIANCE.NS not found in SEC database.
+INFO:     127.0.0.1:44504 - "POST /api/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44516 - "GET /api/download/RELIANCE.NS HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46822 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46824 - "GET /static/app.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:46822 - "GET /static/styles.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46822 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+Error fetching SEC data for HINDCOPPER.NS: Ticker HINDCOPPER.NS not found in SEC database.
+INFO:     127.0.0.1:55150 - "POST /api/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34632 - "GET /api/download/HINDCOPPER.NS HTTP/1.1" 200 OK
+er process [9863]
