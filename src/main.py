@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Request, HTTPException
+import asyncio
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 import os
-import asyncio
 
 # Import Pipeline Modules
 from src.data.sec_fetcher import fetch_company_facts
@@ -13,6 +13,7 @@ from src.data.normalizer import normalize_financials
 from src.engine.ratios import calculate_ratios
 from src.engine.scorer import generate_sub_scores
 from src.ml.predictor import ml_predictor
+from src.ml.sentiment import fetch_and_analyze_news
 from src.engine.charts import generate_stock_chart_base64, generate_confidence_chart_base64, generate_subscores_chart_base64
 
 from src.pdf.generator import ReportGenerator
@@ -37,9 +38,14 @@ async def analyze_company(req: AnalyzeRequest):
          raise HTTPException(status_code=400, detail="Invalid ticker symbol")
     
     try:
-        # 1. Data Pipeline
-        sec_data = fetch_company_facts(ticker)
-        stock_data = fetch_stock_history(ticker)
+        # 1. Data Pipeline & NLP Sentiment Analysis (Concurrent Network Requests)
+        sec_data_task = asyncio.to_thread(fetch_company_facts, ticker)
+        stock_data_task = asyncio.to_thread(fetch_stock_history, ticker)
+        sentiment_task = asyncio.to_thread(fetch_and_analyze_news, ticker)
+        
+        sec_data, stock_data, sentiment_data = await asyncio.gather(
+            sec_data_task, stock_data_task, sentiment_task
+        )
         
         if not sec_data and not stock_data:
             raise HTTPException(status_code=404, detail="Company data not found")
@@ -61,7 +67,9 @@ async def analyze_company(req: AnalyzeRequest):
             "top_drivers": ["Random Forest Inference Confidence:"] + [f"{k}: {v}%" for k,v in ml_confidence.items() if v > 0]
         }
         
-        # 3. Visuals & Charts
+        # 4. Visuals & Charts
+        
+        # 4. Visuals & Charts
         chart_b64 = generate_stock_chart_base64(stock_data.get("history", {}))
         confidence_chart_b64 = generate_confidence_chart_base64(ml_confidence)
         subscores_chart_b64 = generate_subscores_chart_base64(sub_scores.get("scores", {}))
@@ -72,6 +80,7 @@ async def analyze_company(req: AnalyzeRequest):
             "ticker": ticker,
             "company_name": stock_data.get("info", {}).get("shortName", f"{ticker} Inc."),
             **verdict_data,
+            "sentiment": sentiment_data, # Added NLP News Component
             "ratios": ratios, # Needed for PDF
             "sub_scores": sub_scores.get("scores", {}), # Needed for UI Radar
             "chart_b64": chart_b64, # Needed for UI

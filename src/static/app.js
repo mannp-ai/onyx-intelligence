@@ -22,6 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const scoreVa = document.getElementById("res-score-va");
     const scoreRi = document.getElementById("res-score-ri");
 
+    // Sentiment Elements
+    const sentLabel = document.getElementById("res-sentiment-label");
+    const sentScore = document.getElementById("res-sentiment-score");
+    const sentHeadlines = document.querySelector("#res-headlines ul");
+
     let currentTicker = "";
 
     // Allow Enter key to submit
@@ -145,6 +150,44 @@ document.addEventListener("DOMContentLoaded", () => {
                 li.textContent = sig;
                 resPositive.appendChild(li);
             });
+        }
+
+        // Populate Sentiment
+        if (data.sentiment) {
+            sentLabel.textContent = data.sentiment.sentiment_label;
+            sentScore.textContent = `Score: ${data.sentiment.average_polarity}`;
+
+            // Apply verdict styling format to sentiment
+            sentLabel.className = "";
+            const sentClass = data.sentiment.sentiment_label.toLowerCase().replace(" ", "-");
+            if (sentClass === "bullish") sentLabel.style.color = "#2ea043";
+            else if (sentClass === "bearish") sentLabel.style.color = "#f85149";
+            else sentLabel.style.color = "#d29922";
+
+            sentHeadlines.innerHTML = "";
+            if (data.sentiment.headlines) {
+                data.sentiment.headlines.forEach(news => {
+                    const li = document.createElement("li");
+                    li.style.fontSize = "0.85rem";
+                    li.style.marginBottom = "10px";
+                    li.style.lineHeight = "1.4";
+
+                    const a = document.createElement("a");
+                    a.href = news.url;
+                    a.target = "_blank";
+                    const polarityTag = news.polarity > 0 ? `[+${news.polarity}]` : `[${news.polarity}]`;
+                    a.textContent = `${news.date} ${polarityTag} - ${news.title}`;
+                    a.style.color = "inherit";
+                    a.style.textDecoration = "none";
+
+                    // Hover effect
+                    a.addEventListener('mouseenter', () => a.style.color = '#58a6ff');
+                    a.addEventListener('mouseleave', () => a.style.color = 'inherit');
+
+                    li.appendChild(a);
+                    sentHeadlines.appendChild(li);
+                });
+            }
         }
 
         // Show Results

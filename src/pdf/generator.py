@@ -76,7 +76,20 @@ class ReportGenerator:
         for sig in self.data.get("top_drivers", []):
             elements.append(Paragraph(f"• {sig}", self.normal_style))
             
-        elements.append(Spacer(1, 20))
+            
+        elements.append(Spacer(1, 10))
+            
+        # Add Sentiment block
+        sentiment = self.data.get("sentiment", {})
+        if sentiment:
+            s_color = colors.HexColor('#d29922')
+            if sentiment.get('average_polarity', 0) > 0.15: s_color = colors.HexColor('#2ea043')
+            elif sentiment.get('average_polarity', 0) < -0.15: s_color = colors.HexColor('#f85149')
+            s_style = ParagraphStyle('Sent', parent=self.normal_style, textColor=s_color)
+            
+            elements.append(Paragraph("<b>Public Market Sentiment:</b>", self.normal_style))
+            elements.append(Paragraph(f"Label: {sentiment.get('sentiment_label', 'Neutral')} (Score: {sentiment.get('average_polarity', 0.0)})", s_style))
+            elements.append(Spacer(1, 20))
         
         # Add Confidence Chart if present
         b64_conf = self.data.get("confidence_chart_b64", "")
