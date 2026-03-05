@@ -12,7 +12,7 @@ from src.data.normalizer import normalize_financials
 
 from src.engine.ratios import calculate_ratios
 from src.engine.scorer import generate_sub_scores
-from src.engine.aggregator import generate_final_verdict
+from src.ml.predictor import ml_predictor
 from src.engine.charts import generate_stock_chart_base64
 
 from src.pdf.generator import ReportGenerator
@@ -46,10 +46,20 @@ async def analyze_company(req: AnalyzeRequest):
             
         normalized = normalize_financials(sec_data, stock_data)
         
-        # 2. ML Engine (Deterministic Proxy)
+        # 2. ML Engine (Random Forest Inference)
         ratios = calculate_ratios(normalized)
         sub_scores = generate_sub_scores(ratios)
-        verdict_data = generate_final_verdict(ratios, sub_scores)
+        
+        # Pass features to the True ML Predictor
+        market_data = normalized.get("market_data", {})
+        ml_verdict, ml_score, ml_confidence = ml_predictor.predict_verdict(ratios, market_data)
+        
+        verdict_data = {
+            "onyx_score": ml_score,
+            "verdict": ml_verdict,
+            "confidence": ml_confidence,
+            "top_drivers": ["Random Forest Inference Confidence:"] + [f"{k}: {v}%" for k,v in ml_confidence.items() if v > 0]
+        }
         
         # 3. Visuals & Charts
         chart_b64 = generate_stock_chart_base64(stock_data.get("history", {}))

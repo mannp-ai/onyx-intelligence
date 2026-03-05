@@ -9,7 +9,8 @@ This project was built to demystify complex financial analysis using structured 
 ## Features
 
 - **Automated Data Pipeline:** Dynamically fetches US-GAAP financial data from the official SEC EDGAR database and 5-year stock data via `yfinance`.
-- **Explainable Scoring Engine:** Calculates financial formulas (Current Ratios, Debt-to-Equity, Margins, Beta) and feeds them into a deterministic Rule-Based Expert System to evaluate Health, Risk, Profitability, and Valuation out of 100.
+- **Machine Learning Inference Engine:** Utilizes an integrated **Random Forest Classifier** (`scikit-learn`) to predict investment verdicts. The model is trained on a suite of financial metrics (Liquidity, Leverage, Profitability, Valuation, Volatility) and outputs deterministic class probabilities.
+- **Explainable Sub-Scoring Engine:** Calculates transparent financial formulas (Current Ratios, Debt-to-Equity, Net Margins, Beta) to evaluate Health, Risk, and Valuation out of 100 alongside the ML confidence metrics.
 - **Premium Web Dashboard:** A responsive, glassmorphic UI built with Vanilla JS that visually maps the analysis progression and renders interactive charts and sub-score metrics.
 - **Forensic PDF Synthesis:** Automatically compiles a multi-page, branded PDF report containing Executive Summaries, Visual Charts, and Verdict rationale.
 
@@ -21,7 +22,7 @@ The platform is designed for high performance and strict explainability:
 1. **Frontend:** HTML, CSS Variables, and Vanilla JavaScript.
 2. **Backend API:** Python with **FastAPI**.
 3. **Data Ingestion:** `requests` (for SEC EDGAR JSON APIs) and `yfinance`.
-4. **Machine Learning Proxy:** Custom Rule-Based Evaluation Engine written in Python. This approach was chosen specifically over a deep neural network to guarantee **100% explainability** in financial decision-making. 
+4. **Machine Learning Model:** A supervised **Random Forest Classifier** (`scikit-learn`) trained on deterministic financial metrics. The model predicts a Buy/Hold/Sell action classification and outputs a robust probability confidence score, ensuring transparency over "black-box" approaches.
 5. **Visualization & PDF:** `matplotlib` and `reportlab`.
 
 ---
