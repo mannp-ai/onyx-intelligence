@@ -13,7 +13,7 @@ from src.data.normalizer import normalize_financials
 from src.engine.ratios import calculate_ratios
 from src.engine.scorer import generate_sub_scores
 from src.ml.predictor import ml_predictor
-from src.engine.charts import generate_stock_chart_base64
+from src.engine.charts import generate_stock_chart_base64, generate_confidence_chart_base64, generate_subscores_chart_base64
 
 from src.pdf.generator import ReportGenerator
 
@@ -63,6 +63,8 @@ async def analyze_company(req: AnalyzeRequest):
         
         # 3. Visuals & Charts
         chart_b64 = generate_stock_chart_base64(stock_data.get("history", {}))
+        confidence_chart_b64 = generate_confidence_chart_base64(ml_confidence)
+        subscores_chart_b64 = generate_subscores_chart_base64(sub_scores.get("scores", {}))
         
         # Merge for output
         response_data = {
@@ -72,7 +74,9 @@ async def analyze_company(req: AnalyzeRequest):
             **verdict_data,
             "ratios": ratios, # Needed for PDF
             "sub_scores": sub_scores.get("scores", {}), # Needed for UI Radar
-            "chart_b64": chart_b64 # Needed for UI
+            "chart_b64": chart_b64, # Needed for UI
+            "confidence_chart_b64": confidence_chart_b64,
+            "subscores_chart_b64": subscores_chart_b64
         }
         
         # Generate PDF asynchronously in the background?
@@ -82,6 +86,8 @@ async def analyze_company(req: AnalyzeRequest):
         
         return JSONResponse(content=response_data)
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Analysis failed: {e}")
         raise HTTPException(status_code=500, detail="Internal analysis engine error")

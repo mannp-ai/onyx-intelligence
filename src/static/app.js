@@ -139,18 +139,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Populate lists
         resPositive.innerHTML = "";
-        data.top_signals.forEach(sig => {
-            const li = document.createElement("li");
-            li.textContent = sig;
-            resPositive.appendChild(li);
-        });
-
-        resNegative.innerHTML = "";
-        data.risk_signals.forEach(sig => {
-            const li = document.createElement("li");
-            li.textContent = sig;
-            resNegative.appendChild(li);
-        });
+        if (data.top_drivers) {
+            data.top_drivers.forEach(sig => {
+                const li = document.createElement("li");
+                li.textContent = sig;
+                resPositive.appendChild(li);
+            });
+        }
 
         // Show Results
         resultsSection.classList.remove("hidden");

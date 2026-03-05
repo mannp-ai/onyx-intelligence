@@ -70,22 +70,42 @@ class ReportGenerator:
             Paragraph(f"ONYX Score: {score} / 100", ParagraphStyle('Score', fontSize=20, alignment=1, spaceAfter=10)),
             Paragraph(f"Verdict: {verdict}", v_style),
             Spacer(1, 20),
-            Paragraph("<b>Top Strengths:</b>", self.normal_style)
+            Paragraph("<b>Model Confidence & Drivers:</b>", self.normal_style)
         ]
         
-        for sig in self.data.get("top_signals", []):
-            elements.append(Paragraph(f"• <font color='green'>{sig}</font>", self.normal_style))
+        for sig in self.data.get("top_drivers", []):
+            elements.append(Paragraph(f"• {sig}", self.normal_style))
             
-        elements.append(Spacer(1, 10))
-        elements.append(Paragraph("<b>Key Risks:</b>", self.normal_style))
-        for sig in self.data.get("risk_signals", []):
-            elements.append(Paragraph(f"• <font color='red'>{sig}</font>", self.normal_style))
+        elements.append(Spacer(1, 20))
+        
+        # Add Confidence Chart if present
+        b64_conf = self.data.get("confidence_chart_b64", "")
+        if b64_conf:
+            try:
+                img_data = b64_conf.split(",")[1] if "," in b64_conf else b64_conf
+                img_io = io.BytesIO(base64.b64decode(img_data))
+                img = Image(img_io, width=3.5*inch, height=3.5*inch)
+                elements.append(img)
+            except Exception as e:
+                print(f"Failed to embed confidence graph in PDF: {e}")
             
         return elements
         
     def _build_financials(self) -> list:
         elements = [Paragraph("Financial Details & Ratios", self.h2_style), Spacer(1, 10)]
         
+        # Add Sub-Scores Chart if present
+        b64_sub = self.data.get("subscores_chart_b64", "")
+        if b64_sub:
+            try:
+                img_data = b64_sub.split(",")[1] if "," in b64_sub else b64_sub
+                img_io = io.BytesIO(base64.b64decode(img_data))
+                img = Image(img_io, width=6*inch, height=3*inch)
+                elements.append(img)
+                elements.append(Spacer(1, 20))
+            except Exception as e:
+                print(f"Failed to embed subscores graph in PDF: {e}")
+                
         # Raw Data Table Placeholder
         data = [['Metric', 'Value']]
         
