@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const resScore = document.getElementById("res-score");
     const resLabel = document.getElementById("res-label");
     const resPositive = document.querySelector("#res-positive ul");
-    const resNegative = document.querySelector("#res-negative ul");
 
     // New Visuals Elements
     const resChart = document.getElementById("res-chart");
@@ -26,6 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const sentLabel = document.getElementById("res-sentiment-label");
     const sentScore = document.getElementById("res-sentiment-score");
     const sentHeadlines = document.querySelector("#res-headlines ul");
+
+    // Forensics Elements
+    const resDcfPrice = document.getElementById("res-dcf-price");
+    const resDcfUpside = document.getElementById("res-dcf-upside");
+    const resPiotroski = document.getElementById("res-piotroski");
+    const resAltman = document.getElementById("res-altman");
+    const resAltmanZone = document.getElementById("res-altman-zone");
 
     let currentTicker = "";
 
@@ -113,6 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function showResults(data) {
         // Hide Search UI entirely
         searchSection.classList.add("hidden");
+        // Show Results section FIRST so that TradingView Canvas has >0 dimensions!
+        resultsSection.classList.remove("hidden");
+
         // Update DOM
         resTicker.textContent = data.ticker;
 
@@ -127,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
         animateValue(scoreRi, 0, sub.risk || 0, 800);
 
         // Render Chart
+        // Render Interactive Price Chart
         if (data.chart_b64) {
             resChart.src = data.chart_b64;
             resChart.parentElement.classList.remove("hidden");
@@ -190,8 +200,78 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Show Results
-        resultsSection.classList.remove("hidden");
+        // Populate Forensics
+        if (data.forensics) {
+            const f = data.forensics;
+            if (f.dcf && f.dcf.is_valid) {
+                resDcfPrice.textContent = `$${f.dcf.target_price}`;
+                const up = (f.dcf.upside * 100).toFixed(2);
+                resDcfUpside.textContent = `${up > 0 ? '+' : ''}${up}% Margin of Safety`;
+                if (f.dcf.upside > 0) {
+                    resDcfUpside.style.color = "#2ea043";
+                } else {
+                    resDcfUpside.style.color = "#f85149";
+                }
+            } else {
+                resDcfPrice.textContent = "N/A";
+                resDcfUpside.textContent = "Insufficient FCF Data";
+                resDcfUpside.style.color = "#8b949e";
+            }
+            resPiotroski.textContent = `${f.piotroski_f_score}/9`;
+
+            if (f.altman_z_score) {
+                resAltman.textContent = f.altman_z_score.score;
+                resAltmanZone.textContent = f.altman_z_score.risk_zone;
+                if (f.altman_z_score.risk_zone === "Safe") resAltmanZone.style.color = "#2ea043";
+                else if (f.altman_z_score.risk_zone === "Distress") resAltmanZone.style.color = "#f85149";
+                else resAltmanZone.style.color = "#d29922";
+            }
+        }
+
+        // Radar Chart (Sub-Scores)
+        if (data.sub_scores) {
+            if (window.radarChartInstance) {
+                window.radarChartInstance.destroy();
+            }
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            window.radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Financial Health', 'Profitability', 'Valuation', 'Risk'],
+                    datasets: [{
+                        label: 'ONYX Sub-Scores',
+                        data: [
+                            data.sub_scores.financial_health || 0,
+                            data.sub_scores.profitability || 0,
+                            data.sub_scores.valuation || 0,
+                            data.sub_scores.risk || 0
+                        ],
+                        backgroundColor: 'rgba(88, 166, 255, 0.2)',
+                        borderColor: 'rgba(88, 166, 255, 1)',
+                        pointBackgroundColor: 'rgba(88, 166, 255, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(88, 166, 255, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#8b949e', font: { family: 'Inter', size: 12 } },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
     }
 
     function resetUI() {

@@ -54,6 +54,13 @@ def normalize_financials(sec_data: dict, stock_data: dict) -> dict:
         
         net_income = extract_latest_annual_value(sec_data, "NetIncomeLoss")
         gross_profit = extract_latest_annual_value(sec_data, "GrossProfit")
+        ebit = extract_latest_annual_value(sec_data, "OperatingIncomeLoss") or net_income
+        
+        retained_earnings = extract_latest_annual_value(sec_data, "RetainedEarningsAccumulatedDeficit")
+        
+        operating_cash_flow = extract_latest_annual_value(sec_data, "NetCashProvidedByUsedInOperatingActivities")
+        capex = extract_latest_annual_value(sec_data, "PaymentsToAcquirePropertyPlantAndEquipment")
+        free_cash_flow = operating_cash_flow - capex
     else:
         # Fallback to globally compatible yfinance data (e.g. Indian Stocks)
         bs = stock_data.get("fundamentals", {}).get("balance_sheet", {})
@@ -68,6 +75,15 @@ def normalize_financials(sec_data: dict, stock_data: dict) -> dict:
         revenue = extract_latest_yfinance_val(inc, "Total Revenue")
         net_income = extract_latest_yfinance_val(inc, "Net Income")
         gross_profit = extract_latest_yfinance_val(inc, "Gross Profit")
+        ebit = extract_latest_yfinance_val(inc, "EBIT") or net_income
+        
+        retained_earnings = extract_latest_yfinance_val(bs, "Retained Earnings")
+        
+        cf = stock_data.get("fundamentals", {}).get("cash_flow", {})
+        operating_cash_flow = extract_latest_yfinance_val(cf, "Operating Cash Flow")
+        free_cash_flow = extract_latest_yfinance_val(cf, "Free Cash Flow")
+        if not free_cash_flow and operating_cash_flow:
+            free_cash_flow = operating_cash_flow - extract_latest_yfinance_val(cf, "Capital Expenditure")
     
     # Stock info
     info = stock_data.get("info", {})
@@ -75,6 +91,11 @@ def normalize_financials(sec_data: dict, stock_data: dict) -> dict:
     beta = info.get("beta", 1.0)
     pe_ratio = info.get("trailingPE", 0)
     pb_ratio = info.get("priceToBook", 0)
+    current_price = info.get("currentPrice", 0.0) or info.get("previousClose", 0.0)
+    shares_outstanding = info.get("sharesOutstanding", 0.0)
+    
+    if not shares_outstanding and current_price > 0:
+        shares_outstanding = market_cap / current_price
     
     # Failsafe calculations
     if not current_assets and total_assets:
@@ -90,17 +111,25 @@ def normalize_financials(sec_data: dict, stock_data: dict) -> dict:
             "total_liabilities": total_liabilities,
             "total_equity": total_equity,
             "current_assets": current_assets,
-            "current_liabilities": current_liabilities
+            "current_liabilities": current_liabilities,
+            "retained_earnings": retained_earnings
         },
         "income_statement": {
             "revenue": revenue,
             "net_income": net_income,
-            "gross_profit": gross_profit
+            "gross_profit": gross_profit,
+            "ebit": ebit
+        },
+        "cash_flow": {
+            "operating_cash_flow": operating_cash_flow,
+            "free_cash_flow": free_cash_flow
         },
         "market_data": {
             "market_cap": market_cap,
             "beta": beta,
             "pe_ratio": pe_ratio,
-            "pb_ratio": pb_ratio
+            "pb_ratio": pb_ratio,
+            "current_price": current_price,
+            "shares_outstanding": shares_outstanding
         }
     }

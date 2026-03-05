@@ -34,7 +34,7 @@ To run ONYX locally, you will need Python 3 installed.
 ### 1. Clone & Set Up Environment
 ```bash
 # Clone the repository (or navigate to the project folder)
-cd ONYX
+cd onyx-intelligence
 
 # Create a virtual environment
 python -m venv venv

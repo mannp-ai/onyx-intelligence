@@ -9,9 +9,15 @@ def fetch_and_analyze_news(ticker: str) -> dict:
     Returns an aggregated sentiment score and a list of headlines.
     """
     try:
-        stock = yf.Ticker(ticker)
-        news_items = stock.news
+        # Using yf.Search is much faster and thread-safe for news than calling yf.Ticker() concurrently
+        search = yf.Search(ticker, max_results=10)
+        news_items = search.news
         
+        if not news_items:
+            # Fallback to Ticker if Search fails
+            stock = yf.Ticker(ticker)
+            news_items = stock.news
+            
         if not news_items:
             return {
                 "sentiment_label": "Neutral",

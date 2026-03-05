@@ -12,6 +12,7 @@ from src.data.normalizer import normalize_financials
 
 from src.engine.ratios import calculate_ratios
 from src.engine.scorer import generate_sub_scores
+from src.engine.forensics import generate_forensics
 from src.ml.predictor import ml_predictor
 from src.ml.sentiment import fetch_and_analyze_news
 from src.engine.charts import generate_stock_chart_base64, generate_confidence_chart_base64, generate_subscores_chart_base64
@@ -35,7 +36,7 @@ async def analyze_company(req: AnalyzeRequest):
     ticker = req.ticker.upper().strip()
     # allow alphanumeric and dot (e.g. RELIANCE.NS) and up to 15 chars
     if len(ticker) > 15 or not ticker.replace('.', '').replace('-', '').isalnum():
-         raise HTTPException(status_code=400, detail="Invalid ticker symbol")
+        raise HTTPException(status_code=400, detail="Invalid ticker symbol")
     
     try:
         # 1. Data Pipeline & NLP Sentiment Analysis (Concurrent Network Requests)
@@ -56,6 +57,9 @@ async def analyze_company(req: AnalyzeRequest):
         ratios = calculate_ratios(normalized)
         sub_scores = generate_sub_scores(ratios)
         
+        # 3. Forensics Math Engine
+        forensics_data = generate_forensics(normalized)
+        
         # Pass features to the True ML Predictor
         market_data = normalized.get("market_data", {})
         ml_verdict, ml_score, ml_confidence = ml_predictor.predict_verdict(ratios, market_data)
@@ -66,8 +70,6 @@ async def analyze_company(req: AnalyzeRequest):
             "confidence": ml_confidence,
             "top_drivers": ["Random Forest Inference Confidence:"] + [f"{k}: {v}%" for k,v in ml_confidence.items() if v > 0]
         }
-        
-        # 4. Visuals & Charts
         
         # 4. Visuals & Charts
         chart_b64 = generate_stock_chart_base64(stock_data.get("history", {}))
@@ -81,6 +83,7 @@ async def analyze_company(req: AnalyzeRequest):
             "company_name": stock_data.get("info", {}).get("shortName", f"{ticker} Inc."),
             **verdict_data,
             "sentiment": sentiment_data, # Added NLP News Component
+            "forensics": forensics_data, # Added Expert Forensics
             "ratios": ratios, # Needed for PDF
             "sub_scores": sub_scores.get("scores", {}), # Needed for UI Radar
             "chart_b64": chart_b64, # Needed for UI

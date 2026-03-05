@@ -483,6 +483,147 @@ h4 {
     color: var(--text-primary);
 }
 
+/* Dashboard Grid Redesign - Phase 11 */
+.dashboard-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.ticker-badge.large {
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    background: var(--accent-primary);
+    color: #fff;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dashboard-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dashboard-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.dense-card {
+    padding: 1.2rem !important;
+}
+
+.panel-heading {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.verdict-card-pro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem !important;
+}
+
+.verdict-card-pro .verdict-score {
+    font-size: 4rem;
+    margin: 0.5rem 0;
+}
+
+.verdict-card-pro .verdict-label {
+    font-size: 1.2rem;
+    padding: 0.4rem 1.2rem;
+}
+
+.huge-val {
+    font-size: 2.5rem !important;
+    text-align: center;
+    color: #fff;
+    margin: 0.5rem 0;
+}
+
+.margin-safety {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.factor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-size: 0.95rem;
+}
+
+.factor-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.micro-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-left: 8px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.main-chart-card {
+    padding: 1rem !important;
+}
+
+.feed-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.feed-subheading {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.feed-divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 1rem 0;
+}
+
+.compact-list ul {
+    margin: 0;
+}
+
+.compact-list li {
+    padding: 0.3rem 0;
+    font-size: 0.85rem;
+}
+
 /* Utilities */
 .hidden {
     display: none !important;

@@ -16,9 +16,15 @@ def fetch_stock_history(ticker: str) -> dict:
 
     # Check cache (1 day expiry)
     if os.path.exists(cache_path):
-        if time.time() - os.path.getmtime(cache_path) < 86400:
-            with open(cache_path, "r") as f:
-                return json.load(f)
+        # Only use cache if it was modified within the last 24 hours AND data is not empty
+        try:
+            if time.time() - os.path.getmtime(cache_path) < 86400:
+                with open(cache_path, "r") as f:
+                    cached = json.load(f)
+                    if cached and "history" in cached and len(cached["history"]) > 0:
+                        return cached
+        except (json.JSONDecodeError, KeyError):
+            pass # Fall through to fetch new data
 
     try:
         stock = yf.Ticker(ticker)
@@ -46,6 +52,7 @@ def fetch_stock_history(ticker: str) -> dict:
 
         bs_clean = extract_fundamentals(stock.balance_sheet)
         inc_clean = extract_fundamentals(stock.income_stmt)
+        cf_clean = extract_fundamentals(stock.cashflow)
 
         data = {
             "ticker": ticker.upper(),
@@ -53,7 +60,8 @@ def fetch_stock_history(ticker: str) -> dict:
             "history": json.loads(hist.to_json(orient='index')),
             "fundamentals": {
                 "balance_sheet": bs_clean,
-                "income_stmt": inc_clean
+                "income_stmt": inc_clean,
+                "cash_flow": cf_clean
             }
         }
 

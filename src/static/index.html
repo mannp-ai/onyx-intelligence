@@ -61,76 +61,129 @@
 
             <!-- Results Preview Section -->
             <section id="results-section" class="hidden">
-                <h2 class="section-title">Analysis Complete</h2>
-                <div class="visuals-grid">
-                    <div class="glass-card">
-                        <h3>Sub-Scores Breakdown</h3>
-                        <div class="subscores-grid">
-                            <div class="score-box">
-                                <h4>Financial Health</h4>
-                                <div class="score-val" id="res-score-fh">--</div>
+                <div class="dashboard-header">
+                    <h2 class="section-title">Forensic Analysis Complete</h2>
+                    <span class="ticker-badge large" id="res-ticker">AAPL</span>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- LEFT SIDEBAR: Dense Numeric Analytics -->
+                    <div class="dashboard-sidebar">
+
+                        <!-- Core Verdict -->
+                        <div class="glass-card dense-card verdict-card-pro">
+                            <h3 class="panel-heading">Investment Verdict</h3>
+                            <div class="verdict-score" id="res-score">--</div>
+                            <div class="verdict-label" id="res-label">--</div>
+                            <p class="verdict-sub">ONYX Score (Out of 100)</p>
+                        </div>
+
+                        <!-- Intrinsic Value -->
+                        <div class="glass-card dense-card">
+                            <h3 class="panel-heading">Intrinsic Valuation (DCF)</h3>
+                            <div class="score-val huge-val" id="res-dcf-price">--</div>
+                            <div class="margin-safety" id="res-dcf-upside"></div>
+                        </div>
+
+                        <!-- Sub-Scores List -->
+                        <div class="glass-card dense-card">
+                            <h3 class="panel-heading">Factor Breakdown</h3>
+                            <div class="factor-row">
+                                <span>Financial Health</span>
+                                <strong id="res-score-fh">--</strong>
                             </div>
-                            <div class="score-box">
-                                <h4>Profitability</h4>
-                                <div class="score-val" id="res-score-pr">--</div>
+                            <div class="factor-row">
+                                <span>Profitability</span>
+                                <strong id="res-score-pr">--</strong>
                             </div>
-                            <div class="score-box">
-                                <h4>Valuation</h4>
-                                <div class="score-val" id="res-score-va">--</div>
+                            <div class="factor-row">
+                                <span>Valuation</span>
+                                <strong id="res-score-va">--</strong>
                             </div>
-                            <div class="score-box">
-                                <h4>Risk Score</h4>
-                                <div class="score-val" id="res-score-ri">--</div>
+                            <div class="factor-row">
+                                <span>Risk Score</span>
+                                <strong id="res-score-ri">--</strong>
                             </div>
                         </div>
+
+                        <!-- Wall Street Formulas -->
+                        <div class="glass-card dense-card">
+                            <h3 class="panel-heading">Advanced Forensics</h3>
+                            <div class="factor-row">
+                                <span>Piotroski F-Score</span>
+                                <strong id="res-piotroski">--</strong>
+                            </div>
+                            <div class="factor-row">
+                                <span>Altman Z-Score</span>
+                                <div>
+                                    <strong id="res-altman">--</strong>
+                                    <span class="micro-badge" id="res-altman-zone"></span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="glass-card">
-                        <h3>Stock Price History (5Y)</h3>
-                        <div class="chart-container">
-                            <img id="res-chart" src="" alt="Stock Price Chart">
+                    <!-- MAIN CONTENT: Visuals & Feeds -->
+                    <div class="dashboard-main">
+
+                        <!-- Stock Chart Row -->
+                        <div class="glass-card main-chart-card">
+                            <h3 class="panel-heading">5-Year Price Action</h3>
+                            <div class="chart-container" style="height: 350px;">
+                                <img id="res-chart" src="" alt="Stock Price Chart"
+                                    style="height: 100%; object-fit: contain;">
+                            </div>
+                        </div>
+
+                        <!-- Data Split Row -->
+                        <div class="dashboard-split">
+                            <!-- Radar Panel -->
+                            <div class="glass-card dense-card">
+                                <h3 class="panel-heading">Factor Geometry Mapping</h3>
+                                <div class="chart-container"
+                                    style="height:250px; display:flex; justify-content:center; align-items:center;">
+                                    <canvas id="radarChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- NLP/Confidence Feed Panel -->
+                            <div class="glass-card dense-card feed-card">
+                                <h3 class="panel-heading">Live Market Feed</h3>
+
+                                <div class="feed-section">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <h4 class="feed-subheading">News Sentiment</h4>
+                                        <div style="text-align: right;">
+                                            <span class="ticker-badge" id="res-sentiment-label"
+                                                style="font-size: 0.75rem;">Neutral</span>
+                                            <div style="font-size: 0.7rem; color: #8b949e; margin-top: 2px;"
+                                                id="res-sentiment-score">Score: 0.0</div>
+                                        </div>
+                                    </div>
+                                    <div class="signal-list compact-list" id="res-headlines">
+                                        <ul
+                                            style="max-height: 120px; overflow-y: auto; text-align: left; padding-left: 15px;">
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <hr class="feed-divider">
+
+                                <div class="feed-section">
+                                    <h4 class="feed-subheading">Model Drivers</h4>
+                                    <div class="signal-list positive-signals compact-list" id="res-positive">
+                                        <ul></ul>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="results-grid">
-                    <div class="result-card verdict-card glass-card">
-                        <div class="verdict-header">
-                            <h3>Investment Verdict</h3>
-                            <span class="ticker-badge" id="res-ticker">AAPL</span>
-                        </div>
-                        <div class="verdict-score" id="res-score">
-                            --
-                        </div>
-                        <div class="verdict-label" id="res-label">
-                            --
-                        </div>
-                        <p class="verdict-sub">ONYX Score (Out of 100)</p>
-                    </div>
-
-                    <div class="result-card signals-card glass-card">
-                        <h3>Key Drivers</h3>
-                        <div class="signal-list positive-signals" id="res-positive">
-                            <h4>Model Confidence</h4>
-                            <ul>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="result-card signals-card glass-card">
-                        <h3>Public Market Sentiment</h3>
-                        <div class="verdict-header" style="margin-bottom: 10px;">
-                            <h4 id="res-sentiment-label">Neutral</h4>
-                            <span class="ticker-badge" id="res-sentiment-score">Score: 0.0</span>
-                        </div>
-                        <div class="signal-list positive-signals" id="res-headlines">
-                            <ul style="max-height: 250px; overflow-y: auto; text-align: left; padding-left: 20px;">
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-footer">
+                <div class="action-footer" style="margin-top: 2rem;">
                     <button class="primary-btn download-btn" id="download-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -138,7 +191,7 @@
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Download Full Forensic PDF
+                        Export PDF Report
                     </button>
                     <button class="secondary-btn" id="new-search-btn">New Analysis</button>
                 </div>
@@ -146,7 +199,8 @@
         </main>
     </div>
 
-    <script src="/static/app.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/app.js?v=4"></script>
 </body>
 
 </html>

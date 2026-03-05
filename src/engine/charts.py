@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg') # MUST BE SET BEFORE pyplot IMPORT
 import matplotlib.pyplot as plt
 import io
 import base64
